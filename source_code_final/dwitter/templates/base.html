@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Lightwave is a lightweight, privacy-focused social media alternative designed to prevent doomscrolling.">
+    <title>Lightwave</title>
+    <!-- Include the Bulma CSS framework for structure -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <!-- Include Fontawesome.com icon library -->
+    <script src="https://kit.fontawesome.com/3ce3f832ae.js" crossorigin="anonymous"></script>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #0e0c15;
+            --card-bg: #181524;
+            --card-border: #272238;
+            --primary-color: #7c3aed;
+            --primary-hover: #6d28d9;
+            --text-main: #f3f0ff;
+            --text-muted: #94a3b8;
+            --card-radius: 12px;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Override Bulma card, box, title, container styles globally */
+        .container {
+            max-width: 1152px !important;
+            padding: 0 1.5rem;
+        }
+
+        .box {
+            background-color: var(--card-bg) !important;
+            border: 1px solid var(--card-border) !important;
+            border-radius: var(--card-radius) !important;
+            color: var(--text-main) !important;
+            box-shadow: none !important;
+            padding: 1.5rem !important;
+        }
+
+        .title {
+            color: var(--text-main) !important;
+            font-weight: 700 !important;
+        }
+
+        .subtitle {
+            color: var(--text-muted) !important;
+        }
+
+        /* Custom Navbar styling */
+        .navbar-custom {
+            background-color: #120f1c;
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.75rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-logo-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            height: 38px;
+            width: 38px;
+            object-fit: contain;
+        }
+
+        .navbar-brand-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #c084fc;
+            letter-spacing: -0.025em;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background-color: #211e2f;
+            border: 1px solid var(--card-border);
+            color: var(--text-main) !important;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-action:hover {
+            background-color: #2a273a;
+            border-color: #3b3552;
+        }
+
+        .btn-logout {
+            padding: 0.5rem 1.25rem;
+            border-radius: 10px;
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ef4444 !important;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            height: 40px;
+        }
+
+        .btn-logout:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-login {
+            color: var(--text-main) !important;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-login:hover {
+            color: #c084fc !important;
+        }
+
+        .btn-signup {
+            padding: 0.5rem 1.5rem;
+            border-radius: 10px;
+            background-color: var(--primary-color);
+            color: #ffffff !important;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            height: 40px;
+        }
+
+        .btn-signup:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            padding: 0.75rem 1.5rem !important;
+            height: auto !important;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover) !important;
+        }
+
+        /* Global inputs & form styling */
+        input[type="text"],
+        input[type="password"],
+        textarea,
+        select,
+        .textarea {
+            background-color: #211e2f !important;
+            border: 1px solid var(--card-border) !important;
+            border-radius: 8px !important;
+            color: var(--text-main) !important;
+            padding: 0.75rem 1rem !important;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        textarea:focus,
+        select:focus,
+        .textarea:focus {
+            border-color: var(--primary-color) !important;
+            outline: none !important;
+        }
+
+        form label {
+            color: var(--text-main) !important;
+            font-weight: 600 !important;
+            margin-bottom: 0.5rem !important;
+            display: inline-block !important;
+        }
+
+        .helptext {
+            color: var(--text-muted) !important;
+            font-size: 0.8rem !important;
+            display: block !important;
+            margin-top: 0.25rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .errorlist {
+            color: #f87171 !important;
+            list-style-type: none !important;
+            padding: 0 !important;
+            margin: 0.5rem 0 !important;
+            font-size: 0.85rem !important;
+        }
+
+        /* Links */
+        a {
+            color: #a78bfa;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #c084fc;
+        }
+
+        /* Avatar & Post Cards */
+        .avatar-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            user-select: none;
+        }
+
+        .post-card {
+            border-left: 3px solid #6366f1 !important;
+        }
+
+        .post-username {
+            color: #f3f0ff !important;
+            text-decoration: none !important;
+        }
+
+        .post-username:hover {
+            color: #a78bfa !important;
+        }
+
+        .post-body {
+            font-size: 1.05rem;
+            color: #e2e8f0;
+            margin-top: 0.25rem;
+            white-space: pre-wrap;
+        }
+
+        .post-header {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Action bar (likes / dislikes / replies) */
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.85rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .action-btn:hover {
+            border-color: #3b3552;
+            background-color: #211e2f;
+            color: var(--text-main);
+        }
+
+        .action-btn.active-like {
+            border-color: #4ade80;
+            color: #4ade80;
+            background-color: rgba(74, 222, 128, 0.08);
+        }
+
+        .action-btn.active-dislike {
+            border-color: #f87171;
+            color: #f87171;
+            background-color: rgba(248, 113, 113, 0.08);
+        }
+
+        .action-btn.reply-link {
+            color: var(--text-muted);
+        }
+
+        .action-btn.reply-link:hover {
+            color: #a78bfa;
+            border-color: #a78bfa;
+            background-color: rgba(167, 139, 250, 0.08);
+        }
+    </style>
+    {% block extra_head %}{% endblock extra_head %}
+</head>
+
+<body>
+    <header class="navbar-custom">
+        <div class="container navbar-container">
+            <a href="{% url 'dwitter:dashboard' %}" class="navbar-logo-link" id="nav-logo">
+                <img src="https://u.cubeupload.com/bloxabyte/LW.png" alt="Lightwave Logo" class="navbar-logo">
+                <span class="navbar-brand-name">Lightwave</span>
+            </a>
+
+            <div class="navbar-actions">
+                {% if user.is_authenticated %}
+                <a href="{% url 'dwitter:post' %}" class="btn-action" title="Create Post" id="nav-post">
+                    <i class="fa-solid fa-plus"></i>
+                </a>
+                <a href="{% url 'dwitter:profile' request.user.profile.id %}" class="btn-action" title="My Profile"
+                    id="nav-profile">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+                <a href="{% url 'logout' %}" class="btn-logout" id="nav-logout">
+                    <span>Logout</span>
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn-login" id="nav-login">Login</a>
+                <a href="{% url 'signup' %}" class="btn-signup" id="nav-signup">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="columns">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="column is-12" style="margin-top: 1rem; margin-bottom: 3rem;">
+    <div class="mb-5">
+        <h2 class="title is-2" style="letter-spacing: -0.02em;">Explore Profiles</h2>
+        <p class="subtitle is-6">Connect with other users on Lightwave</p>
+    </div>
+
+    <div class="columns is-multiline">
+        {% for profile in profiles %}
+            <div class="column is-4">
+                <a href="{% url 'dwitter:profile' profile.id %}" style="text-decoration: none;">
+                    <div class="box has-text-centered py-5" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 240px;">
+                        <div class="avatar-circle mb-3" style="width: 64px; height: 64px; font-size: 1.5rem; margin: 0 auto 1rem auto;">
+                            {{ profile.user.username|slice:":1"|upper }}
+                        </div>
+                        <h3 class="title is-4 mb-2" style="color: #f3f0ff; display: flex; align-items: center; justify-content: center; gap: 0.45rem; flex-wrap: wrap;">{{ profile.user.username }}{% if profile.is_verified %}<span class="tag is-small" title="Verified" style="background: rgba(167, 139, 250, 0.16); border: 1px solid rgba(167, 139, 250, 0.24); color: #d8b4fe; border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em;"><i class="fa-solid fa-check"></i></span>{% endif %}</h3>
+                        
+                        <div class="columns is-mobile mb-4" style="width: 100%; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1rem; margin-top: 0.5rem;">
+                            <div class="column py-0">
+                                <p class="title is-6 mb-0" style="color: #c084fc !important;">{{ profile.user.dweets.count }}</p>
+                                <p class="heading mb-0" style="color: var(--text-muted); font-size: 0.7rem;">Posts</p>
+                            </div>
+                            <div class="column py-0" style="border-left: 1px solid rgba(255,255,255,0.06);">
+                                <p class="title is-6 mb-0" style="color: #a78bfa !important;">{{ profile.followed_by.count }}</p>
+                                <p class="heading mb-0" style="color: var(--text-muted); font-size: 0.7rem;">Followers</p>
+                            </div>
+                        </div>
+
+                        <span class="button btn-action is-fullwidth" style="height: auto; padding: 0.5rem 1rem; font-size: 0.9rem; font-weight: 600; border-radius: 10px; margin-top: auto; display: block; text-align: center;">
+                            View Profile
+                        </span>
+                    </div>
+                </a>
+            </div>
+        {% empty %}
+            <div class="column is-12">
+                <div class="box has-text-centered py-6">
+                    <i class="fa-solid fa-users-slash" style="font-size: 3rem; color: #a78bfa; margin-bottom: 1.5rem; opacity: 0.7;"></i>
+                    <h3 class="title is-4">No Profiles Found</h3>
+                    <p style="color: var(--text-muted);">There are no other profiles registered on Lightwave yet.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="column is-4 is-offset-4" style="margin-top: 3rem; margin-bottom: 3rem;">
+    <div class="box">
+        <div class="has-text-centered mb-5">
+            <h2 class="title is-2" style="letter-spacing: -0.02em;">Welcome Back</h2>
+            <p class="subtitle is-6">Log in to your Lightwave account</p>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="notification is-danger is-light mb-4" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; border-radius: 10px; padding: 0.75rem 1.25rem;">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="field mb-4">
+                    <label class="label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <div class="control">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                        <p class="help text-muted" style="margin-top: 0.25rem; font-size: 0.8rem; color: var(--text-muted) !important;">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="help is-danger" style="color: #f87171; font-size: 0.8rem; margin-top: 0.25rem;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="button btn-primary is-fullwidth mt-5">
+                Log In
+            </button>
+        </form>
+
+        <div class="has-text-centered mt-5">
+            <p class="is-size-6" style="color: var(--text-muted);">
+                New to Lightwave? <a href="{% url 'signup' %}" style="font-weight: 600; color: #c084fc;">Create an account</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock content %}

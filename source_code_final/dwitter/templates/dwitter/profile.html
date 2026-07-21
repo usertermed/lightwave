@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load mention_tags %}
+
+{% block content %}
+<!-- Main Feed Column -->
+<div class="column is-8">
+    <!-- Profile Header Card -->
+    <div class="box mb-5" style="background-color: #1e1b2e !important;">
+        <div class="media">
+            <div class="media-left" style="margin-right: 1.5rem;">
+                <div class="avatar-circle" style="width: 80px; height: 80px; font-size: 2.25rem;">
+                    {{ profile.user.username|slice:":1"|upper }}
+                </div>
+            </div>
+            <div class="media-content">
+                <div class="content">
+                    <div class="is-flex is-justify-content-between is-align-items-center is-flex-wrap-wrap"
+                        style="gap: 1rem;">
+                        <div style="min-width: 0;">
+                            <h1 class="title is-2 mb-2"
+                                style="letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 0.25rem !important; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <span>{% if profile.display_name %}{{ profile.display_name }}{% else %}{{ profile.user.username }}{% endif %}</span>
+                                {% if profile.is_verified %}
+                                <span class="tag is-small"
+                                    title="Verified"
+                                    style="background: rgba(167, 139, 250, 0.16); border: 1px solid rgba(167, 139, 250, 0.24); color: #d8b4fe; border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em;">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                                {% endif %}
+                            </h1>
+                            <p class="subtitle is-6" style="color: var(--text-muted); margin-top: 0 !important;">@{{ profile.user.username }}</p>
+                            {% if profile.about_me %}
+                            <p style="color: #e2e8f0; margin-top: 0.35rem; max-width: 36rem;">{{ profile.about_me }}</p>
+                            {% endif %}
+                        </div>
+
+                        {% if profile != user.profile %}
+                        <form method="post">
+                            {% csrf_token %}
+                            {% if profile in user.profile.follows.all %}
+                            <button class="button" name="follow" value="unfollow"
+                                style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; border-radius: 12px; font-weight: 600; padding: 0.65rem 1.5rem; transition: all 0.3s ease; height: auto; cursor: pointer;">
+                                Unfollow <i class="fa-solid fa-user-minus" style="margin-left: 0.5rem;"></i>
+                            </button>
+                            {% else %}
+                            <button class="button btn-primary" name="follow" value="follow"
+                                style="padding: 0.65rem 1.5rem; height: auto;">
+                                Follow <i class="fa-solid fa-user-plus" style="margin-left: 0.5rem;"></i>
+                            </button>
+                            {% endif %}
+                        </form>
+                        {% else %}
+                        <span class="tag is-medium"
+                            style="background: rgba(167, 139, 250, 0.15); border: 1px solid rgba(167, 139, 250, 0.3); color: #c084fc; border-radius: 10px; font-weight: 600; padding: 0.5rem 1rem;">
+                            <i class="fa-solid fa-user" style="margin-right: 0.5rem;"></i> This is you
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if profile == user.profile %}
+        <div class="box mt-4" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+            <form method="post" class="content">
+                {% csrf_token %}
+                <div class="field">
+                    <label class="label" style="color: #e2e8f0;">Display name</label>
+                    {{ settings_form.display_name }}
+                    {% if settings_form.display_name.help_text %}<p class="help" style="color: var(--text-muted);">{{ settings_form.display_name.help_text }}</p>{% endif %}
+                </div>
+                <div class="field">
+                    <label class="label" style="color: #e2e8f0;">About Me</label>
+                    {{ settings_form.about_me }}
+                    {% if settings_form.about_me.help_text %}<p class="help" style="color: var(--text-muted);">{{ settings_form.about_me.help_text }}</p>{% endif %}
+                </div>
+                <button class="button btn-primary" type="submit">Save profile</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- Profile Stats Row -->
+        <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 1.5rem 0 1rem 0;">
+        <div class="columns is-mobile has-text-centered">
+            <div class="column">
+                <p class="title is-4 mb-0" style="color: #c084fc !important;">{{ profile.user.dweets.count }}</p>
+                <p class="heading" style="color: var(--text-muted);">Posts</p>
+            </div>
+            <div class="column">
+                <p class="title is-4 mb-0" style="color: #818cf8 !important;">{{ profile.follows.count }}</p>
+                <p class="heading" style="color: var(--text-muted);">Following</p>
+            </div>
+            <div class="column">
+                <p class="title is-4 mb-0" style="color: #a78bfa !important;">{{ profile.followed_by.count }}</p>
+                <p class="heading" style="color: var(--text-muted);">Followers</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Posts Feed -->
+    <h3 class="title is-4 mb-4">Posts</h3>
+    <div class="timeline-container">
+        {% for dweet in profile.user.dweets.all %}
+        <div class="box mb-4 post-card">
+            <article class="media">
+                <figure class="media-left">
+                    <div class="avatar-circle">
+                        {{ profile.user.username|slice:":1"|upper }}
+                    </div>
+                </figure>
+                <div class="media-content">
+                    <div class="content">
+                        <div class="post-header">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                <strong>{% if profile.display_name %}{{ profile.display_name }}{% else %}{{ profile.user.username }}{% endif %}</strong>
+                                {% if profile.is_verified %}
+                                <span class="tag is-small"
+                                    title="Verified"
+                                    style="background: rgba(167, 139, 250, 0.16); border: 1px solid rgba(167, 139, 250, 0.24); color: #d8b4fe; border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em;">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                                {% endif %}
+                                <span style="color: var(--text-muted); font-size: 0.95rem;">@{{ profile.user.username }}</span>
+                            </div>
+                            <small class="post-time" style="color: var(--text-muted); margin-left: 0.5rem;">
+                                {{ dweet.created_at|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                        <p class="post-body">
+                            {{ dweet.body|render_mentions|safe }}
+                        </p>
+                    </div>
+                    <!-- Action Bar -->
+                    <div class="post-actions">
+                        <form method="post" action="{% url 'dwitter:like_dweet' dweet.pk %}" style="margin:0;">
+                            {% csrf_token %}
+                            <button type="submit"
+                                class="action-btn {% if dweet.pk in liked_ids %}active-like{% endif %}">
+                                <i class="fa-solid fa-thumbs-up"></i> {{ dweet.likes.count }}
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'dwitter:dislike_dweet' dweet.pk %}" style="margin:0;">
+                            {% csrf_token %}
+                            <button type="submit"
+                                class="action-btn {% if dweet.pk in disliked_ids %}active-dislike{% endif %}">
+                                <i class="fa-solid fa-thumbs-down"></i> {{ dweet.dislikes.count }}
+                            </button>
+                        </form>
+                        <a href="{% url 'dwitter:dweet_detail' dweet.pk %}" class="action-btn reply-link">
+                            <i class="fa-regular fa-comment"></i> {{ dweet.replies.count }}
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+        {% empty %}
+        <div class="box has-text-centered py-6">
+            <i class="fa-solid fa-comment-slash"
+                style="font-size: 3rem; color: #a78bfa; margin-bottom: 1.5rem; opacity: 0.7;"></i>
+            <h3 class="title is-4">No Posts Yet</h3>
+            <p style="color: var(--text-muted);">
+                {{ profile.user.username }} has not published any posts on Lightwave yet.
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Sidebar Column -->
+<div class="column is-4">
+    <div class="block mb-5">
+        <a href="{% url 'dwitter:profile_list' %}" class="button btn-action is-fullwidth"
+            style="height: auto; padding: 0.65rem 1rem; font-weight: 600;">
+            <i class="fa-solid fa-users" style="margin-right: 0.5rem;"></i> All Profiles
+        </a>
+    </div>
+
+    <!-- Following Card -->
+    <div class="box mb-5">
+        <h4 class="title is-5 mb-4">Following ({{ profile.follows.count }})</h4>
+        <div class="content">
+            <div class="is-flex is-flex-direction-column" style="gap: 0.75rem;">
+                {% for following in profile.follows.all %}
+                <a href="{% url 'dwitter:profile' following.id %}" class="is-flex is-align-items-center"
+                    style="gap: 0.75rem; text-decoration: none;">
+                    <div class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.85rem; box-shadow: none;">
+                        {{ following.user.username|slice:":1"|upper }}
+                    </div>
+                    <span style="font-weight: 500; color: #f3f0ff;">{{ following.user.username }}</span>
+                </a>
+                {% empty %}
+                <p style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">Not following anyone yet.
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Followers Card -->
+    <div class="box mb-5">
+        <h4 class="title is-5 mb-4">Followers ({{ profile.followed_by.count }})</h4>
+        <div class="content">
+            <div class="is-flex is-flex-direction-column" style="gap: 0.75rem;">
+                {% for follower in profile.followed_by.all %}
+                <a href="{% url 'dwitter:profile' follower.id %}" class="is-flex is-align-items-center"
+                    style="gap: 0.75rem; text-decoration: none;">
+                    <div class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.85rem; box-shadow: none;">
+                        {{ follower.user.username|slice:":1"|upper }}
+                    </div>
+                    <span style="font-weight: 500; color: #f3f0ff;">{{ follower.user.username }}</span>
+                </a>
+                {% empty %}
+                <p style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">No followers yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

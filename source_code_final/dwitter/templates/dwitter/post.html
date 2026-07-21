@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="column is-6 is-offset-3" style="margin-top: 2rem; margin-bottom: 3rem;">
+    <div class="box">
+        <div class="mb-5">
+            <h2 class="title is-2" style="letter-spacing: -0.02em;">New Post</h2>
+            <p class="subtitle is-6">Share what's on your mind with your followers</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="field mb-4">
+                <div class="control">
+                    {{ form.body }}
+                </div>
+                {% for error in form.body.errors %}
+                    <p class="help is-danger" style="color: #f87171; font-size: 0.8rem; margin-top: 0.25rem;">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="buttons is-right mt-5" style="gap: 1rem;">
+                <a href="{% url 'dwitter:dashboard' %}" class="button btn-action" style="width: auto; height: auto; padding: 0.75rem 1.5rem; border-radius: 12px; display: inline-flex; align-items: center;">
+                    Cancel
+                </a>
+                <button class="button btn-primary" type="submit" style="padding: 0.75rem 2rem; height: auto; display: inline-flex; align-items: center;">
+                    Post It <i class="fa-solid fa-paper-plane" style="margin-left: 0.5rem;"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

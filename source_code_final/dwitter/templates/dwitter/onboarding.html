@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="column is-10 is-offset-1">
+    <div class="box" style="margin-top: 2rem; padding: 4rem 3rem !important; text-align: center; background-color: var(--card-bg) !important;">
+        <div class="block mb-6">
+            <img src="https://u.cubeupload.com/bloxabyte/LW.png" alt="Lightwave Logo" style="max-width: 100px; margin-bottom: 1.5rem;">
+            <h1 class="title is-1" style="color: #c084fc; font-size: 3.5rem; letter-spacing: -0.03em; margin-bottom: 1rem; font-weight: 800;">
+                Lightwave
+            </h1>
+            <p class="subtitle is-3" style="font-weight: 300; max-width: 650px; margin: 0 auto; color: var(--text-muted); font-size: 1.5rem; line-height: 1.4;">
+                A lightweight, privacy-focused social network built to prevent doomscrolling.
+            </p>
+        </div>
+
+        <div class="buttons is-centered mb-6" style="gap: 1.5rem;">
+            <a href="{% url 'signup' %}" class="btn-signup" style="font-size: 1.1rem; padding: 1.5rem 2.5rem; height: auto;">
+                Get Started
+            </a>
+            <a href="{% url 'login' %}" class="btn-action" style="width: auto; height: auto; padding: 0.85rem 2rem; font-weight: 600; font-size: 1.1rem; border-radius: 10px;">
+                Login
+            </a>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 4rem 0 3rem 0;">
+
+        <div class="columns" style="text-align: left;">
+            <div class="column">
+                <div class="box" style="height: 100%; min-height: 200px; background-color: #1e1b2e !important; border-color: var(--card-border) !important;">
+                    <h3 class="title is-4" style="color: #c084fc; display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fa-solid fa-bolt"></i> No Algorithms
+                    </h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">
+                        Only posts from people you follow, sorted chronologically. No advertisements, no tracking, and no distraction.
+                    </p>
+                </div>
+            </div>
+            <div class="column">
+                <div class="box" style="height: 100%; min-height: 200px; background-color: #1e1b2e !important; border-color: var(--card-border) !important;">
+                    <h3 class="title is-4" style="color: #818cf8; display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fa-solid fa-shield-halved"></i> Privacy First
+                    </h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">
+                        We do not track your activity, target ads, or sell your profile details. You are in control of your social experience.
+                    </p>
+                </div>
+            </div>
+            <div class="column">
+                <div class="box" style="height: 100%; min-height: 200px; background-color: #1e1b2e !important; border-color: var(--card-border) !important;">
+                    <h3 class="title is-4" style="color: #a78bfa; display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fa-solid fa-moon"></i> Mindful Design
+                    </h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">
+                        Designed to prevent doomscrolling by keeping things simple, fast, and light. Check in, catch up, and get back to life.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

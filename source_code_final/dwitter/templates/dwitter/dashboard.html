@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load mention_tags %}
+
+{% block content %}
+<!-- Main Feed Column -->
+<div class="column is-8">
+
+    <div class="mb-5" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 0.95rem 1rem;">
+        <div class="buttons has-addons" style="margin-bottom: 0.5rem;">
+            <a href="{% url 'dwitter:dashboard' %}?view=following"
+               class="button"
+               style="border-radius: 999px 0 0 999px; border: 1px solid rgba(167, 139, 250, 0.24); {% if active_view == 'following' %}background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; box-shadow: 0 6px 16px rgba(124, 58, 237, 0.18);{% else %}background: rgba(255,255,255,0.04); color: #e2e8f0;{% endif %}">
+                Following
+            </a>
+            <a href="{% url 'dwitter:dashboard' %}?view=recommended"
+               class="button"
+               style="border-radius: 0 999px 999px 0; border: 1px solid rgba(167, 139, 250, 0.24); {% if active_view == 'recommended' %}background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; box-shadow: 0 6px 16px rgba(124, 58, 237, 0.18);{% else %}background: rgba(255,255,255,0.04); color: #e2e8f0;{% endif %}">
+                Recommended
+            </a>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0;">Switch between posts from people you follow and fresh picks from the wider community.</p>
+    </div>
+
+    <!-- Timeline / Dweets Feed -->
+    <div class="timeline-container">
+        {% for dweet in dweets %}
+        <div class="box mb-4 post-card">
+            <article class="media">
+                <figure class="media-left">
+                    <div class="avatar-circle">
+                        {{ dweet.user.username|slice:":1"|upper }}
+                    </div>
+                </figure>
+                <div class="media-content">
+                    <div class="content">
+                        <div class="post-header">
+                            <strong>
+                                <a href="{% url 'dwitter:profile' dweet.user.profile.id %}" class="post-username" style="display: inline-flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                    <span>{% if dweet.user.profile.display_name %}{{ dweet.user.profile.display_name }}{% else %}{{ dweet.user.username }}{% endif %}</span>
+                                    {% if dweet.user.profile.is_verified %}
+                                    <span class="tag is-small"
+                                        title="Verified"
+                                        style="background: rgba(167, 139, 250, 0.16); border: 1px solid rgba(167, 139, 250, 0.24); color: #d8b4fe; border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em;">
+                                        <i class="fa-solid fa-check"></i>
+                                    </span>
+                                    {% endif %}
+                                </a>
+                                <span style="color: var(--text-muted); font-size: 0.95rem; margin-left: 0.35rem;">@{{ dweet.user.username }}</span>
+                            </strong>
+                            <small class="post-time" style="color: var(--text-muted); margin-left: 0.5rem;">
+                                {{ dweet.created_at|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                        <p class="post-body">
+                            {{ dweet.body|render_mentions|safe }}
+                        </p>
+                    </div>
+                    <!-- Action Bar -->
+                    <div class="post-actions">
+                        <form method="post" action="{% url 'dwitter:like_dweet' dweet.pk %}" style="margin:0;">
+                            {% csrf_token %}
+                            <button type="submit" class="action-btn {% if dweet.pk in liked_ids %}active-like{% endif %}">
+                                <i class="fa-solid fa-thumbs-up"></i> {{ dweet.likes.count }}
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'dwitter:dislike_dweet' dweet.pk %}" style="margin:0;">
+                            {% csrf_token %}
+                            <button type="submit" class="action-btn {% if dweet.pk in disliked_ids %}active-dislike{% endif %}">
+                                <i class="fa-solid fa-thumbs-down"></i> {{ dweet.dislikes.count }}
+                            </button>
+                        </form>
+                        <a href="{% url 'dwitter:dweet_detail' dweet.pk %}" class="action-btn reply-link">
+                            <i class="fa-regular fa-comment"></i> {{ dweet.replies.count }}
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+        {% empty %}
+        <div class="box has-text-centered py-6 mb-4">
+            <i class="fa-solid fa-wind"
+                style="font-size: 3rem; color: #a78bfa; margin-bottom: 1.5rem; opacity: 0.7;"></i>
+            <h3 class="title is-4">Feed is Quiet</h3>
+            <p
+                style="color: var(--text-muted); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                {% if active_view == 'recommended' %}
+                There are no recommended posts right now. Follow more people to unlock fresh updates.
+                {% else %}
+                You are not following anyone who has posted yet. Explore other profiles to customize your feed!
+                {% endif %}
+            </p>
+            <a href="{% url 'dwitter:profile_list' %}" class="button btn-primary">
+                Find Profiles
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if dweets %}
+    <div class="box has-text-centered py-4 mt-5">
+        <p style="color: var(--text-muted);">
+            Looking for more updates? <a href="{% url 'dwitter:profile_list' %}" style="font-weight: 600;">Explore
+                profiles</a> to expand your circle!
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Sidebar Widgets Column -->
+<div class="column is-4">
+    <!-- User Profile Summary Card -->
+    <div class="box mb-5" style="background-color: #1e1b2e !important;">
+        <div class="has-text-centered pb-4 mb-4" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+            <div class="avatar-circle" style="margin: 0 auto 1rem auto; width: 64px; height: 64px; font-size: 1.75rem;">
+                {{ user.username|slice:":1"|upper }}
+            </div>
+            <h3 class="title is-4 mb-1">{{ user.username }}</h3>
+            <a href="{% url 'dwitter:profile' user.profile.id %}" style="font-size: 0.9rem; color: #c084fc;">
+                View Profile
+            </a>
+        </div>
+
+        <!-- User Stats Grid -->
+        <div class="columns is-mobile has-text-centered">
+            <div class="column">
+                <p class="title is-5 mb-0" style="color: #c084fc !important;">{{ user.dweets.count }}</p>
+                <p class="heading" style="color: var(--text-muted);">Posts</p>
+            </div>
+            <div class="column">
+                <p class="title is-5 mb-0" style="color: #818cf8 !important;">{{ user.profile.follows.count }}</p>
+                <p class="heading" style="color: var(--text-muted);">Following</p>
+            </div>
+            <div class="column">
+                <p class="title is-5 mb-0" style="color: #a78bfa !important;">{{ user.profile.followed_by.count }}</p>
+                <p class="heading" style="color: var(--text-muted);">Followers</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Action / Explore Card -->
+    <div class="box mb-5">
+        <h4 class="title is-5 mb-3">Explore</h4>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
+            Discover other users on Lightwave, find your friends, and follow profiles.
+        </p>
+        <a href="{% url 'dwitter:profile_list' %}" class="button btn-action is-fullwidth"
+            style="height: auto; padding: 0.65rem 1rem; font-weight: 600;">
+            Find People
+        </a>
+    </div>
+
+    <!-- Info Footer -->
+    <div class="px-4" style="font-size: 0.8rem; color: var(--text-muted);">
+        <p>© 2026 Lightwave. Built for mindfulness.</p>
+        <p>Support: <a href="mailto:damiensullins@gmail.com"
+                style="color: var(--text-muted);">damiensullins@gmail.com</a></p>
+    </div>
+</div>
+{% endblock content %}

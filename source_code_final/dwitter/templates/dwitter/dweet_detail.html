@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load mention_tags %}
+
+{% block content %}
+<div class="column is-8 is-offset-2">
+
+    <!-- Back link -->
+    <div class="mb-4">
+        <a href="javascript:history.back()" class="action-btn reply-link" style="display: inline-flex;">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- Original Post -->
+    <div class="box mb-4 post-card">
+        <article class="media">
+            <figure class="media-left">
+                <div class="avatar-circle">
+                    {{ dweet.user.username|slice:":1"|upper }}
+                </div>
+            </figure>
+            <div class="media-content">
+                <div class="content">
+                    <div class="post-header">
+                        <strong>
+                            <a href="{% url 'dwitter:profile' dweet.user.profile.id %}" class="post-username">
+                                {{ dweet.user.username }}
+                            </a>
+                        </strong>
+                        <small style="color: var(--text-muted); margin-left: 0.5rem;">
+                            {{ dweet.created_at|date:"M d, Y H:i" }}
+                        </small>
+                    </div>
+                    <p class="post-body" style="font-size: 1.15rem;">
+                        {{ dweet.body|render_mentions|safe }}
+                    </p>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="post-actions">
+                    <form method="post" action="{% url 'dwitter:like_dweet' dweet.pk %}" style="margin:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn {% if user_liked %}active-like{% endif %}">
+                            <i class="fa-solid fa-thumbs-up"></i> {{ dweet.likes.count }}
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'dwitter:dislike_dweet' dweet.pk %}" style="margin:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn {% if user_disliked %}active-dislike{% endif %}">
+                            <i class="fa-solid fa-thumbs-down"></i> {{ dweet.dislikes.count }}
+                        </button>
+                    </form>
+                    <span class="action-btn" style="cursor: default;">
+                        <i class="fa-regular fa-comment"></i> {{ dweet.replies.count }}
+                    </span>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Reply Form -->
+    <div class="box mb-5">
+        <h4 class="title is-5 mb-3">Leave a Reply</h4>
+        <form method="post">
+            {% csrf_token %}
+            <div class="field mb-3">
+                <div class="control">
+                    {{ form.body }}
+                </div>
+                {% for error in form.body.errors %}
+                    <p style="color: #f87171; font-size: 0.8rem; margin-top: 0.25rem;">{{ error }}</p>
+                {% endfor %}
+            </div>
+            <div class="has-text-right">
+                <button type="submit" class="button btn-primary" style="padding: 0.5rem 1.5rem;">
+                    Reply <i class="fa-solid fa-paper-plane" style="margin-left: 0.5rem;"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Replies Thread -->
+    {% if replies %}
+        <h4 class="title is-5 mb-4" style="color: var(--text-muted); font-weight: 600;">
+            {{ replies.count }} {{ replies.count|pluralize:"Reply,Replies" }}
+        </h4>
+    {% endif %}
+
+    {% for reply in replies %}
+        <div class="box mb-3" style="border-left: 3px solid #3b3552 !important;">
+            <article class="media">
+                <figure class="media-left">
+                    <div class="avatar-circle" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                        {{ reply.user.username|slice:":1"|upper }}
+                    </div>
+                </figure>
+                <div class="media-content">
+                    <div class="content">
+                        <div class="post-header">
+                            <strong>
+                                <a href="{% url 'dwitter:profile' reply.user.profile.id %}" class="post-username">
+                                    {{ reply.user.username }}
+                                </a>
+                            </strong>
+                            <small style="color: var(--text-muted); margin-left: 0.5rem;">
+                                {{ reply.created_at|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                        <p class="post-body" style="font-size: 0.97rem;">{{ reply.body|render_mentions|safe }}</p>
+                    </div>
+                </div>
+            </article>
+        </div>
+    {% empty %}
+        <div class="box has-text-centered py-5" style="border: 1px dashed var(--card-border) !important; background: transparent !important;">
+            <p style="color: var(--text-muted);">No replies yet. Be the first to reply!</p>
+        </div>
+    {% endfor %}
+
+</div>
+{% endblock content %}
