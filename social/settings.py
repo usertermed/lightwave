@@ -10,10 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from urllib.parse import urlparse
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env when present.
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -84,12 +91,43 @@ WSGI_APPLICATION = "social.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("SUPABASE_DATABASE_URL")
+USE_LOCAL_SQLITE = os.environ.get("USE_LOCAL_SQLITE", "false").lower() in ("1", "true", "yes")
+LOCAL_DB_PATH = os.environ.get("LOCAL_DB_PATH", BASE_DIR / "db.sqlite3")
+PGSSLMODE = os.environ.get("PGSSLMODE", "require")
+
+if DATABASE_URL and not USE_LOCAL_SQLITE:
+    parsed_url = urlparse(DATABASE_URL)
+    if parsed_url.scheme in ("postgres", "postgresql"):
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": parsed_url.path.lstrip("/"),
+                "USER": parsed_url.username,
+                "PASSWORD": parsed_url.password,
+                "HOST": parsed_url.hostname,
+                "PORT": parsed_url.port or "5432",
+                "OPTIONS": {
+                    "sslmode": PGSSLMODE,
+                },
+            }
+        }
+    elif parsed_url.scheme in ("sqlite", "sqlite3"):
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / parsed_url.path.lstrip("/"),
+            }
+        }
+    else:
+        raise ValueError("Unsupported DATABASE_URL scheme: {}".format(parsed_url.scheme))
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": LOCAL_DB_PATH,
+        }
     }
-}
 
 
 # Password validation

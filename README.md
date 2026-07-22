@@ -39,12 +39,30 @@ Lightwave is a lightweight social feed app built with Django. It supports short 
    pip install -r requirements.txt
    ```
 
-4. Apply database migrations:
+4. Configure your database using a `.env` file or shell environment.
+
+   - Create a `.env` file in the project root. Example values are shown in `.env.example`.
+
+   - For Supabase/PostgreSQL:
+     ```bash
+     DATABASE_URL="postgres://user:password@db.host.supabase.co:5432/dbname"
+     PGSSLMODE=require
+     ```
+
+   - For local development with SQLite:
+     ```bash
+     USE_LOCAL_SQLITE=true
+     LOCAL_DB_PATH="./db.sqlite3"
+     ```
+
+   The app loads `.env` automatically from the project root.
+
+5. Apply database migrations:
    ```bash
    python manage.py migrate
    ```
 
-5. Create a superuser to access Django admin:
+6. Create a superuser to access Django admin:
    ```bash
    python manage.py createsuperuser
    ( Follow the command's instructions )
