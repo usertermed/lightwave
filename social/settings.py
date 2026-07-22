@@ -37,9 +37,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    'bcc2-75-59-154-109.ngrok-free.app',
-    'ca8b-2600-1700-69b0-9260-f63a-90ab-5a09-ed44.ngrok-free.app',
-    '4e2a-2600-1700-69b0-9260-34bc-47db-1ee4-7c.ngrok-free.app',
+    'lightwave-azure.vercel.app',
 ]
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL = "/" #basically tells app to go to the Dash after a successful login
