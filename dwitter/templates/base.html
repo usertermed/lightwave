@@ -350,6 +350,12 @@
 
             <div class="navbar-actions">
                 {% if user.is_authenticated %}
+                <a href="{% url 'dwitter:notifications' %}" class="btn-action" title="Notifications" id="nav-notifications" style="position: relative;">
+                    <i class="fa-solid fa-bell"></i>
+                    {% if unread_notification_count and unread_notification_count > 0 %}
+                    <span style="position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #ef4444; color: white; font-size: 0.7rem; display: inline-flex; align-items: center; justify-content: center;">{{ unread_notification_count }}</span>
+                    {% endif %}
+                </a>
                 <a href="{% url 'dwitter:post' %}" class="btn-action" title="Create Post" id="nav-post">
                     <i class="fa-solid fa-plus"></i>
                 </a>

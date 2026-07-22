@@ -6,7 +6,17 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView
 
 from .forms import DweetForm, ProfileSettingsForm, ReplyForm
-from .models import Dweet, DweetDislike, DweetLike, Profile, Reply
+from .models import (
+    Dweet,
+    DweetDislike,
+    DweetLike,
+    Notification,
+    Profile,
+    Reply,
+    create_notifications_for_mentions,
+    create_reply_notification,
+    notify_lightwave_updates,
+)
 
 class SignUpView(CreateView):
     form_class = UserCreationForm
@@ -30,6 +40,8 @@ def dashboard(request):
             dweet = form.save(commit=False)
             dweet.user = request.user
             dweet.save()
+            create_notifications_for_mentions(dweet.body, request.user, dweet=dweet)
+            notify_lightwave_updates(dweet)
             return redirect(f"{reverse('dwitter:dashboard')}?view={active_view}")
 
     followed_user_ids = list(request.user.profile.follows.values_list("user_id", flat=True))
@@ -73,6 +85,7 @@ def dashboard(request):
             "liked_ids": liked_ids,
             "disliked_ids": disliked_ids,
             "active_view": active_view,
+            "unread_notifications": Notification.objects.filter(user=request.user, read=False).count(),
         },
     )
 
@@ -141,6 +154,15 @@ def shutdown(request):
 
 
 @login_required
+def notifications(request):
+    user_notifications = Notification.objects.filter(user=request.user).select_related("actor", "dweet", "reply")
+    return render(request, "dwitter/notifications.html", {
+        "notifications": user_notifications,
+        "unread_notifications": user_notifications.filter(read=False).count(),
+    })
+
+
+@login_required
 def like_dweet(request, pk):
     if request.method == "POST":
         dweet = get_object_or_404(Dweet, pk=pk)
@@ -180,6 +202,8 @@ def dweet_detail(request, pk):
             reply.user = request.user
             reply.dweet = dweet
             reply.save()
+            create_notifications_for_mentions(reply.body, request.user, reply=reply)
+            create_reply_notification(reply)
             return redirect("dwitter:dweet_detail", pk=dweet.pk)
 
     user_liked = DweetLike.objects.filter(user=request.user, dweet=dweet).exists()

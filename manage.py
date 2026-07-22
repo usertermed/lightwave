@@ -3,7 +3,7 @@
 import os
 import sys
 
-
+# You've found an easter egg! Cheers from Lightwave, DS!
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'social.settings')

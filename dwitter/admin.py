@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
 
-from .models import Dweet, Profile
+from .models import Dweet, Notification, Profile
 
 
 class ProfileInline(admin.StackedInline):
@@ -20,6 +20,13 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "is_verified", "display_name")
     list_filter = ("is_verified",)
     search_fields = ("user__username", "display_name")
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ("user", "notification_type", "actor", "dweet", "reply", "read", "created_at")
+    list_filter = ("notification_type", "read", "created_at")
+    search_fields = ("user__username", "actor__username", "message")
 
 
 admin.site.unregister(User)
