@@ -100,6 +100,21 @@
             letter-spacing: -0.025em;
         }
 
+        .beta-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5rem;
+            padding: 0.18rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 999px;
+            background-color: rgba(196, 181, 253, 0.16);
+            color: #e9d5ff;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
         .navbar-actions {
             display: flex;
             align-items: center;
@@ -346,6 +361,7 @@
             <a href="{% url 'dwitter:dashboard' %}" class="navbar-logo-link" id="nav-logo">
                 <img src="https://u.cubeupload.com/bloxabyte/LW.png" alt="Lightwave Logo" class="navbar-logo">
                 <span class="navbar-brand-name">Lightwave</span>
+                <span class="beta-pill">beta</span>
             </a>
 
             <div class="navbar-actions">
