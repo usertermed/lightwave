@@ -1,2 +1,5 @@
 .venv
 .env
+db.*
+dwitter/__pycache__
+dwitter/migrations/__pycache__
