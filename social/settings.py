@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'lightwave-azure.vercel.app',
+    'lightwave.usertermed.org',
 ]
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL = "/" #basically tells app to go to the Dash after a successful login

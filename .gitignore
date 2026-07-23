@@ -1,2 +1,7 @@
 .venv
 .env
+db.sqlite3
+dwitter/__pycache__
+dwitter/migrations/__pycache__
+social/__pycache__
+db.sqlite3
