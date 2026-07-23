@@ -30,6 +30,50 @@
             --card-radius: 12px;
         }
 
+        .theme-cyan {
+            --bg-color: #050b12;
+            --card-bg: #0d1721;
+            --card-border: #163544;
+            --primary-color: #22d3ee;
+            --primary-hover: #06b6d4;
+            --text-main: #ecfeff;
+            --text-muted: #7dd3fc;
+            --card-radius: 14px;
+        }
+
+        .theme-emerald {
+            --bg-color: #07110d;
+            --card-bg: #14211b;
+            --card-border: #1f4834;
+            --primary-color: #34d399;
+            --primary-hover: #10b981;
+            --text-main: #ecfdf5;
+            --text-muted: #86efac;
+            --card-radius: 14px;
+        }
+
+        .theme-amber {
+            --bg-color: #140c05;
+            --card-bg: #22160b;
+            --card-border: #483114;
+            --primary-color: #f59e0b;
+            --primary-hover: #d97706;
+            --text-main: #fffbeb;
+            --text-muted: #fcd34d;
+            --card-radius: 14px;
+        }
+
+        .theme-rose {
+            --bg-color: #14070b;
+            --card-bg: #24111a;
+            --card-border: #4b1d2d;
+            --primary-color: #fb7185;
+            --primary-hover: #f43f5e;
+            --text-main: #fff1f2;
+            --text-muted: #fda4af;
+            --card-radius: 14px;
+        }
+
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-color);
@@ -65,7 +109,7 @@
 
         /* Custom Navbar styling */
         .navbar-custom {
-            background-color: #120f1c;
+            background: linear-gradient(180deg, rgba(10, 20, 28, 0.96), rgba(8, 15, 22, 0.96));
             border-bottom: 1px solid var(--card-border);
             position: sticky;
             top: 0;
@@ -129,7 +173,7 @@
             width: 40px;
             height: 40px;
             border-radius: 10px;
-            background-color: #211e2f;
+            background-color: rgba(255,255,255,0.04);
             border: 1px solid var(--card-border);
             color: var(--text-main) !important;
             cursor: pointer;
@@ -137,8 +181,8 @@
         }
 
         .btn-action:hover {
-            background-color: #2a273a;
-            border-color: #3b3552;
+            background-color: rgba(255,255,255,0.08);
+            border-color: var(--primary-color);
         }
 
         .btn-logout {
@@ -200,6 +244,37 @@
 
         .btn-primary:hover {
             background-color: var(--primary-hover) !important;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--card-border);
+        }
+
+        .editor-toolbar .button {
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid var(--card-border);
+            background: transparent;
+            color: var(--text-main);
+        }
+
+        .editor-toolbar .button:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .editor-surface {
+            border: 1px solid var(--card-border) !important;
+            border-radius: 14px !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+            min-height: 140px;
         }
 
         /* Global inputs & form styling */
@@ -275,7 +350,7 @@
         }
 
         .post-card {
-            border-left: 3px solid #6366f1 !important;
+            border-left: 3px solid var(--primary-color) !important;
         }
 
         .post-username {
@@ -292,6 +367,30 @@
             color: #e2e8f0;
             margin-top: 0.25rem;
             white-space: pre-wrap;
+        }
+
+        .post-body b,
+        .post-body strong {
+            font-weight: 700;
+            color: #f5f3ff;
+        }
+
+        .post-body i,
+        .post-body em {
+            font-style: italic;
+        }
+
+        .post-body ul {
+            margin: 0.6rem 0 0.2rem 1.2rem;
+            padding-left: 1rem;
+        }
+
+        .post-body li {
+            margin-bottom: 0.25rem;
+        }
+
+        .post-body a {
+            color: var(--primary-color);
         }
 
         .post-header {
@@ -355,7 +454,7 @@
     {% block extra_head %}{% endblock extra_head %}
 </head>
 
-<body>
+<body class="theme-{% if request.user.is_authenticated and request.user.profile.is_lightwave_super %}{{ request.user.profile.accent_theme|default:'purple' }}{% else %}purple{% endif %}">
     <header class="navbar-custom">
         <div class="container navbar-container">
             <a href="{% url 'dwitter:dashboard' %}" class="navbar-logo-link" id="nav-logo">

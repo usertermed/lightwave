@@ -12,6 +12,13 @@
             {% csrf_token %}
             <div class="field mb-4">
                 <div class="control">
+                    {% if request.user.profile.is_lightwave_super %}
+                    <div class="editor-toolbar">
+                        <button type="button" class="button is-small" onclick="wrapSelection('id_body', '**', '**')">Bold</button>
+                        <button type="button" class="button is-small" onclick="wrapSelection('id_body', '*', '*')">Italic</button>
+                        <button type="button" class="button is-small" onclick="insertAtCursor('id_body', '- ')">Bullet</button>
+                    </div>
+                    {% endif %}
                     {{ form.body }}
                 </div>
                 {% for error in form.body.errors %}
@@ -31,3 +38,28 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block extra_head %}
+<script>
+function wrapSelection(fieldId, prefix, suffix) {
+    const textarea = document.getElementById(fieldId);
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = textarea.value.substring(start, end) || 'text';
+    const replacement = `${prefix}${selected}${suffix}`;
+    textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+    textarea.focus();
+    textarea.setSelectionRange(start + prefix.length, start + prefix.length + selected.length);
+}
+
+function insertAtCursor(fieldId, text) {
+    const textarea = document.getElementById(fieldId);
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(textarea.selectionEnd);
+    textarea.focus();
+    textarea.setSelectionRange(start + text.length, start + text.length);
+}
+</script>
+{% endblock extra_head %}

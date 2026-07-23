@@ -4,14 +4,25 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.html import escape
 
 
 class Dweet(models.Model):
     user = models.ForeignKey(
         User, related_name="dweets", on_delete=models.CASCADE
     )
-    body = models.CharField(max_length=140)
+    body = models.TextField(max_length=1000)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def formatted_body(self):
+        text = escape(self.body)
+        text = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", text)
+        text = re.sub(r"\*(.+?)\*", r"<em>\1</em>", text)
+        text = re.sub(r"(?m)^- (.+)$", r"<li>\1</li>", text)
+        text = text.replace("\n", "<br>")
+        if "<li>" in text:
+            text = f"<ul>{text}</ul>"
+        return text
 
     def __str__(self):
         return (
@@ -160,10 +171,20 @@ def create_reply_notification(reply):
 
 
 class Profile(models.Model):
+    ACCENT_THEMES = [
+        ("purple", "Purple"),
+        ("cyan", "Cyan"),
+        ("emerald", "Emerald"),
+        ("amber", "Amber"),
+        ("rose", "Rose"),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     display_name = models.CharField(max_length=50, blank=True, default="")
     about_me = models.TextField(blank=True, default="")
     is_verified = models.BooleanField(default=False, help_text="Show a verified badge next to this profile.")
+    is_lightwave_super = models.BooleanField(default=False, help_text="Show Lightwave Super early-access status.")
+    accent_theme = models.CharField(max_length=20, choices=ACCENT_THEMES, default="purple")
     follows = models.ManyToManyField(
         "self", related_name="followed_by", symmetrical=False, blank=True
     )
@@ -172,7 +193,7 @@ class Profile(models.Model):
         return self.user.username
 
 class Extra(models.Model):
-    badges= models.CharField(max_length=5, default="")
+    badges = models.CharField(max_length=5, default="")
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created:

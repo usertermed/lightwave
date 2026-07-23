@@ -32,7 +32,7 @@ def dashboard(request):
 
     form = DweetForm(request.POST or None)
     active_view = request.GET.get("view", "following")
-    if active_view not in {"following", "recommended"}:
+    if active_view not in {"following", "recommended", "new"}:
         active_view = "following"
 
     if request.method == "POST":
@@ -47,6 +47,8 @@ def dashboard(request):
     followed_user_ids = list(request.user.profile.follows.values_list("user_id", flat=True))
     if active_view == "following":
         feed_dweets = Dweet.objects.filter(user_id__in=followed_user_ids).order_by("-created_at")
+    elif active_view == "new":
+        feed_dweets = Dweet.objects.all().order_by("-created_at")
     else:
         feed_dweets = (
             Dweet.objects.exclude(user=request.user)
@@ -117,7 +119,11 @@ def profile(request, pk):
 
     if request.method == "POST":
         if request.user.profile == profile:
-            settings_form = ProfileSettingsForm(request.POST, instance=profile)
+            settings_form = ProfileSettingsForm(
+                request.POST,
+                instance=profile,
+                include_accent_theme=request.user.profile.is_lightwave_super,
+            )
             if settings_form.is_valid():
                 settings_form.save()
                 return redirect("dwitter:profile", pk=profile.pk)
@@ -132,7 +138,10 @@ def profile(request, pk):
             current_user_profile.save()
 
     if settings_form is None:
-        settings_form = ProfileSettingsForm(instance=profile)
+        settings_form = ProfileSettingsForm(
+            instance=profile,
+            include_accent_theme=request.user.profile.is_lightwave_super,
+        )
 
     dweet_ids = profile.user.dweets.values_list("pk", flat=True)
     liked_ids = set(DweetLike.objects.filter(user=request.user, dweet_id__in=dweet_ids).values_list("dweet_id", flat=True))

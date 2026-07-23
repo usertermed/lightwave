@@ -12,6 +12,13 @@
                style="border-radius: 999px 0 0 999px; border: 1px solid rgba(167, 139, 250, 0.24); {% if active_view == 'following' %}background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; box-shadow: 0 6px 16px rgba(124, 58, 237, 0.18);{% else %}background: rgba(255,255,255,0.04); color: #e2e8f0;{% endif %}">
                 Following
             </a>
+            {% if request.user.profile.is_lightwave_super %}
+            <a href="{% url 'dwitter:dashboard' %}?view=new"
+               class="button"
+               style="border: 1px solid rgba(167, 139, 250, 0.24); {% if active_view == 'new' %}background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; box-shadow: 0 6px 16px rgba(124, 58, 237, 0.18);{% else %}background: rgba(255,255,255,0.04); color: #e2e8f0;{% endif %}">
+                New
+            </a>
+            {% endif %}
             <a href="{% url 'dwitter:dashboard' %}?view=recommended"
                class="button"
                style="border-radius: 0 999px 999px 0; border: 1px solid rgba(167, 139, 250, 0.24); {% if active_view == 'recommended' %}background: linear-gradient(135deg, #7c3aed, #a78bfa); color: white; box-shadow: 0 6px 16px rgba(124, 58, 237, 0.18);{% else %}background: rgba(255,255,255,0.04); color: #e2e8f0;{% endif %}">
@@ -37,6 +44,13 @@
                             <strong>
                                 <a href="{% url 'dwitter:profile' dweet.user.profile.id %}" class="post-username" style="display: inline-flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
                                     <span>{% if dweet.user.profile.display_name %}{{ dweet.user.profile.display_name }}{% else %}{{ dweet.user.username }}{% endif %}</span>
+                                    {% if dweet.user.profile.is_lightwave_super %}
+                                    <span class="tag is-small"
+                                        title="Lightwave Super"
+                                        style="background: rgba(251, 191, 36, 0.16); border: 1px solid rgba(251, 191, 36, 0.24); color: #fde68a; border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em;">
+                                        <i class="fa-solid fa-sparkles"></i>
+                                    </span>
+                                    {% endif %}
                                     {% if dweet.user.profile.is_verified %}
                                     <span class="tag is-small"
                                         title="Verified"
@@ -51,9 +65,9 @@
                                 {{ dweet.created_at|date:"M d, Y H:i" }}
                             </small>
                         </div>
-                        <p class="post-body">
+                        <div class="post-body">
                             {{ dweet.body|render_mentions|safe }}
-                        </p>
+                        </div>
                     </div>
                     <!-- Action Bar -->
                     <div class="post-actions">

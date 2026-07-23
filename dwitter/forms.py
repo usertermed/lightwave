@@ -10,7 +10,8 @@ class DweetForm(forms.ModelForm):
             attrs={
                 "placeholder": "What's on your mind?",
                 "class": "textarea is-medium",
-                "rows": 3,
+                "rows": 4,
+                "data-rich-editor": "true",
             }
         ),
         label="",
@@ -40,6 +41,18 @@ class ReplyForm(forms.ModelForm):
 
 
 class ProfileSettingsForm(forms.ModelForm):
+    accent_theme = forms.ChoiceField(
+        choices=Profile.ACCENT_THEMES,
+        required=False,
+        widget=forms.Select(attrs={"class": "select"}),
+        help_text="Choose a color accent for your profile and the app shell.",
+    )
+
+    def __init__(self, *args, include_accent_theme=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not include_accent_theme:
+            self.fields.pop("accent_theme", None)
+
     display_name = forms.CharField(
         max_length=50,
         required=False,
@@ -54,5 +67,5 @@ class ProfileSettingsForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ("display_name", "about_me")
+        fields = ("display_name", "about_me", "accent_theme")
 

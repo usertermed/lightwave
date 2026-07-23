@@ -6,7 +6,7 @@ from .models import Dweet, Notification, Profile
 
 class ProfileInline(admin.StackedInline):
     model = Profile
-    fields = ["display_name", "about_me", "is_verified"]
+    fields = ["display_name", "about_me", "is_verified", "is_lightwave_super", "accent_theme"]
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -17,8 +17,8 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "is_verified", "display_name")
-    list_filter = ("is_verified",)
+    list_display = ("user", "is_verified", "is_lightwave_super", "accent_theme", "display_name")
+    list_filter = ("is_verified", "is_lightwave_super", "accent_theme")
     search_fields = ("user__username", "display_name")
 
 

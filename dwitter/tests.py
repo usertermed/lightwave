@@ -67,3 +67,48 @@ class ProfileCustomizationTests(TestCase):
         dashboard_response = self.client.get(reverse("dwitter:dashboard"))
         self.assertContains(dashboard_response, f'href="/profile/{mentioned_user.profile.pk}"')
         self.assertContains(dashboard_response, "@test_user1")
+
+
+class SuperProgramAndFeedTests(TestCase):
+    def test_non_super_user_does_not_see_new_feed_and_editor_controls(self):
+        user = User.objects.create_user(username="basicuser", password="secret123")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("dwitter:dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "?view=new")
+        self.assertNotContains(response, "Bold with")
+
+    def test_new_view_shows_all_posts_across_the_network(self):
+        user = User.objects.create_user(username="superviewer", password="secret123")
+        user.profile.is_lightwave_super = True
+        user.profile.save()
+        followed_user = User.objects.create_user(username="followed_user", password="secret123")
+        other_user = User.objects.create_user(username="other_user", password="secret123")
+        user.profile.follows.add(followed_user.profile)
+        user.profile.save()
+
+        Dweet.objects.create(user=followed_user, body="Followed post")
+        Dweet.objects.create(user=other_user, body="Global post")
+
+        self.client.force_login(user)
+        response = self.client.get(reverse("dwitter:dashboard"), {"view": "new"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Global post")
+        self.assertContains(response, "Followed post")
+
+    def test_theme_preference_is_saved_on_profile(self):
+        user = User.objects.create_user(username="themer", password="secret123")
+        user.profile.is_lightwave_super = True
+        user.profile.save()
+        self.client.force_login(user)
+
+        response = self.client.post(
+            reverse("dwitter:profile", kwargs={"pk": user.profile.pk}),
+            {"display_name": "Theme Tester", "about_me": "Hello", "accent_theme": "cyan"},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        refreshed_profile = Profile.objects.get(pk=user.profile.pk)
+        self.assertEqual(refreshed_profile.accent_theme, "cyan")
